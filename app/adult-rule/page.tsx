@@ -1,10 +1,13 @@
 "use client"
 
+import { useState } from 'react'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import {
   Form,
   FormControl,
@@ -22,7 +25,8 @@ const formSchema = z.object({
 })
 
 export default function PersonForm() {
-  // 1. Define your form.
+  const [resp, setResp] = useState('');
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,46 +35,54 @@ export default function PersonForm() {
     },
   })
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values)
+    const resp = await fetch('api/adult-rule', {
+      method: 'POST',
+      body: JSON.stringify(values),
+    })
+    const json = await resp.json();
+    setResp(JSON.stringify(json));
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/4 ml-20 mt-8 space-y-3">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="age"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age</FormLabel>
-              <FormControl>
-                <Input type="number" min={1} max={100} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="text-white bg-blue-700  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-          Submit
-        </Button>
-      </form>
-    </Form>
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/4 ml-20 mt-8 space-y-3">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="age"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age</FormLabel>
+                <FormControl>
+                  <Input type="number" min={1} max={100} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="text-white bg-blue-700  hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            Submit
+          </Button>
+        </form>
+      </Form>
+      <div className="w-1/4 ml-20 mt-8 space-y-3">
+        <Label>Response -- {resp}</Label>
+      </div>
+    </div>
   )
 }
