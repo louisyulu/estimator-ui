@@ -2,5 +2,7 @@
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
         ".vscode{,/**}"
-    ]
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/67827de3-8ace-48df-b2c3-932924d0abba/resourceGroups/louis-test-1/providers/Microsoft.Web/sites/louis-poc-ui-node",
+    "appService.deploySubpath": "."
 }
